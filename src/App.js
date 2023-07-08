@@ -1,25 +1,76 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
 
-function App() {
+import "./App.css";
+import { filterMonsters } from "./utils";
+import { CardList } from "./components/card-list/CardList";
+import { SearchBox } from "./components/search-box/SearchBox";
+
+const App = () => {
+  const [searchText, setSearchText] = useState('');
+  const [monsters, setMonsters] = useState([]);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((res) => res.json())
+      .then((users) => setMonsters(users));
+  }, []);
+
+  const onSearchChange = (e) => {
+    setSearchText(e.target.value);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1 className="monsters-title">Monsters Rolodex</h1>
+      <SearchBox value={searchText} onChangeHandler={onSearchChange} />
+      <CardList monsters={filterMonsters(monsters, searchText)} />
     </div>
   );
-}
+};
+
+// class App extends Component {
+//   constructor() {
+//     super();
+
+//     this.state = {
+//       monsters: [],
+//       searchText: "",
+//     };
+//   }
+
+//   componentDidMount() {
+//     fetch("https://jsonplaceholder.typicode.com/users")
+//       .then((res) => res.json())
+//       .then((users) => this.setState(() => ({ monsters: users })));
+//   }
+
+//   onSearchChange = (event) => {
+//     this.setState(() => ({ searchText: event.target.value }));
+//   };
+
+//   filterMonsters = () => {
+//     const { monsters, searchText } = this.state;
+//     return monsters.filter((monster) => {
+//       const { name } = monster;
+
+//       return name.toLowerCase().includes(searchText.toLowerCase());
+//     });
+//   };
+
+//   render() {
+//     const { state, filterMonsters, onSearchChange } = this;
+//     const { searchText } = state;
+
+//     const monsters = filterMonsters();
+
+//     return (
+//       <div>
+//         <h1 className='monsters-title'>Monsters Rolodex</h1>
+//         <SearchBox value={searchText} onChangeHandler={onSearchChange} />
+//         <CardList monsters={monsters} />
+//       </div>
+//     );
+//   }
+// }
 
 export default App;
